@@ -3,6 +3,8 @@
 boot:
 	mov si, DATA
 	call puts
+	call kernel_loader
+	call kernel_jumper
 	call boot_halt
 
 boot_halt:
