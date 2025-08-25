@@ -27,7 +27,7 @@ build/kernel.bin: build/kernel.elf
 	$(OBJCOPY) -O binary $< $@
 	@echo "Finished objcopy process on kernel"
 
-build/bootimg.img: build/boot.bin
+build/bootimg.img: build/boot.bin build/kernel.bin
 	@echo "Writing bootable image"
 	@echo "* TRUNCATE: build/bootimg.img"
 	@truncate build/bootimg.img -s 1M
