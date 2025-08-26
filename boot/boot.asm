@@ -75,7 +75,7 @@ load_second_stage:
     mov ss, ax
 
     mov esp, 0x9FC00
-	jmp 0x7E00 ; kernel code starts here
+	jmp 0x7e00 ; kernel code starts here
 
 ; data
 DATA db "[BOOTLOADER] enter;", 0
