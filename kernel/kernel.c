@@ -11,15 +11,22 @@ void _start(void) {
 	kmain();
 }
 
-void kputc(const char chr, int col, int row) {
+void kputc(const char chr, int col, int row, uint8_t attr) {
 	int vramaddr = (row * TEXT_MODE_MAX_COLUMNS) + col;
-	video[vramaddr] = (0x0E << 8) | chr;
+	video[vramaddr] = (attr << 8) | chr;
 }
 
 void kputs(const char* str, int col, int row) {
 	size_t str_length = strlen(str);
 	for (int i = 0; i < str_length; i++) {
-		kputc(str[i], col + i, row);
+		kputc(str[i], col + i, row, 0x0E);
+	}
+}
+
+void kputs_err(const char* str) {
+	size_t str_length = strlen(str);
+	for (int i = 0; i < str_length; i++) {
+		kputc(str[i], 0 + i, 22, 0x04);
 	}
 }
 
