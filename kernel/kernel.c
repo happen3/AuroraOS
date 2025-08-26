@@ -2,11 +2,9 @@
 #include "kstring.h"
 #include "idt.h"
 #include "io.h"
+#include "mem.h"
 #include "pic.h"
-
-#define TEXT_MODE_MAX_COLUMNS 80
-#define TEXT_MODE_MAX_ROWS 25
-volatile uint16_t* video = (volatile uint16_t*)0xB8000;
+#include "vga_txt.h"
 static volatile uint32_t ticks = 0;
 
 void kmain();
@@ -23,25 +21,6 @@ void timer_tick() {
 	ticks++;
 }
 
-void kputc(const char chr, int col, int row, uint8_t attr) {
-	int vramaddr = (row * TEXT_MODE_MAX_COLUMNS) + col;
-	video[vramaddr] = (attr << 8) | chr;
-}
-
-void kputs(const char* str, int col, int row) {
-	size_t str_length = strlen(str);
-	for (int i = 0; i < str_length; i++) {
-		kputc(str[i], col + i, row, 0x0E);
-	}
-}
-
-void kputs_err(const char* str) {
-	size_t str_length = strlen(str);
-	for (int i = 0; i < str_length; i++) {
-		kputc(str[i], 0 + i, 22, 0x04);
-	}
-}
-
 char *byte_to_binary(uint8_t byte) {
 	static char buf[9];
 	for (int i = 0; i < 8; i++) {
@@ -55,8 +34,16 @@ void sti() {
 	asm volatile("sti");
 }
 
-void kmain() {
-	kputs("AuroraOS Kernel", 0, 0);
+char *int_to_binary(uint32_t integer) {
+	static char buf[33];
+	for (int i = 0; i < 32; i++) {
+		buf[i] = (integer & (1 << (31 - i)) ? '1' : '0');
+	}
+	buf[32] = '\0';
+	return buf;
+}
+
+void do_init() {
 	setup_idt();
 	load_idt();
 	com1_init();
@@ -65,5 +52,13 @@ void kmain() {
 	io_wait();
 	sti();
 	reset_mask_pic1(0b11111110); // Allow IRQ 1 at INT 0x30
+	pages_init((uint32_t*)KERNEL_HEAP_START);
+}
+
+void kmain() {
+	do_init();
+
+	clear_screen();
+	kputs("AuroraOS Kernel", 0, 0, 0x0A);
 	while (1) {}
 }

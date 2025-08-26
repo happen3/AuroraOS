@@ -5,3 +5,4 @@ build/*
 *.geany
 arch/*
 arch
+todolist
