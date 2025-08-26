@@ -3,6 +3,7 @@ global protection_error_handler
 global invalid_op_handler
 global double_fault_handler
 global divide_by_zero_handler
+global overflow_handler
 
 extern kputs_err
 extern kputs
@@ -49,7 +50,7 @@ divide_by_zero_handler:
 
 overflow_handler:
     pushad
-    push overflow_handler
+    push overflow_message
     call kputs_err
     pop eax
     popad
@@ -71,4 +72,4 @@ double_fault_message:
     db "Double fault detected.", 0
 
 overflow_message:
-    db "Overflow was detected."
+    db "Overflow was detected.", 0

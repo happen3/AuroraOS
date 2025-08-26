@@ -34,6 +34,6 @@ void kmain() {
 	kputs("AuroraOS Kernel", 0, 0);
 	setup_idt();
 	load_idt();
-	asm volatile("int $0x00");
+	asm volatile("int $0x02");
 	while (1) {}
 }
