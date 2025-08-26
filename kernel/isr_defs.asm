@@ -4,12 +4,15 @@ global invalid_op_handler
 global double_fault_handler
 global divide_by_zero_handler
 global overflow_handler
+global timer_irq
 
 extern kputs_err
 extern kputs
 extern kputc
+extern timer_tick
 
 %include "kernel/cdecl.asm"
+%define PIC_EOI 0x20 
 
 default_isr_handler:
     pushad
@@ -53,6 +56,14 @@ overflow_handler:
     push overflow_message
     call kputs_err
     pop eax
+    popad
+    iret
+
+timer_irq:
+    pushad
+    call timer_tick
+    mov al, PIC_EOI
+    out 0x20, al
     popad
     iret
 

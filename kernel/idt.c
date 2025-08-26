@@ -18,6 +18,7 @@ extern void invalid_op_handler();
 extern void divide_by_zero_handler();
 extern void double_fault_handler();
 extern void overflow_handler();
+extern void timer_irq();
 
 void setup_idt() {
     for (int i = 0; i != 256; i++) {
@@ -28,6 +29,9 @@ void setup_idt() {
     write_idt_entry(0x06, (uint32_t)invalid_op_handler);
     write_idt_entry(0x08, (uint32_t)double_fault_handler);
     write_idt_entry(0x0D, (uint32_t)protection_error_handler);
+
+    // Hardware interrupts
+    write_idt_entry(0x30, (uint32_t)timer_irq);
 }
 
 void load_idt() {
