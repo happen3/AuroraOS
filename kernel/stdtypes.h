@@ -10,3 +10,5 @@ typedef signed int      sint32_t;
 typedef signed long     sint64_t;
 
 typedef uint32_t        size_t;
+
+typedef void*           nullptr_t;

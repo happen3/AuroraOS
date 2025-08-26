@@ -4,7 +4,7 @@ LD = "i686-elf-ld"
 OBJCOPY = "i686-elf-objcopy"
 
 all: build/boot.bin build/kernel.elf.o build/kstring.o build/idt.o\
-	 build/isr_defs.o build/kernel.elf build/kernel.bin build/bootimg.img\
+	 build/isr_defs.o build/mem.o build/vga_txt.o build/kernel.elf build/kernel.bin build/bootimg.img\
 	 arch/x86/boot.img arch/x86/kernel.elf done
 
 build/boot.bin: boot/boot.asm
@@ -38,7 +38,16 @@ build/pic.o: kernel/pic.c
 	@echo "* CC: kernel/pic.c"
 	@$(CC) -c $< -o $@
 
-build/kernel.elf: build/kernel.elf.o build/kstring.o build/isr_defs.o build/idt.o build/io.o build/pic.o
+build/mem.o: kernel/mem.c
+	@echo "* CC: kernel/mem.c"
+	@$(CC) -c $< -o $@
+
+build/vga_txt.o: kernel/vga_txt.c
+	@echo "* CC: kernel/vga_txt.c"
+	@$(CC) -c $< -o $@
+
+build/kernel.elf: build/kernel.elf.o build/kstring.o build/isr_defs.o build/idt.o build/io.o build/pic.o build/mem.o\
+				  build/vga_txt.o
 	@echo "* LD: build/kernel.elf.o"
 	@$(LD) -T kernel/kernel.ld -o $@ $^
 	@echo "Compilation finished"
