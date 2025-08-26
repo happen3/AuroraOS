@@ -1,5 +1,5 @@
 AS = "nasm"
-CC = "i686-elf-gcc" -ffreestanding
+CC = "i686-elf-gcc" -ffreestanding -g
 LD = "i686-elf-ld"
 OBJCOPY = "i686-elf-objcopy"
 

@@ -13,11 +13,13 @@ void write_idt_entry(int n, uint32_t handler) {
 }
 
 extern void default_isr_handler();
+extern void protection_error_handler();
 
 void setup_idt() {
     for (int i = 0; i != 256; i++) {
         write_idt_entry(i, (uint32_t)default_isr_handler);
     }
+    write_idt_entry(0xD, (uint32_t)protection_error_handler);
 }
 
 void load_idt() {
