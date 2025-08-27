@@ -46,8 +46,12 @@ build/vga_txt.o: kernel/vga_txt.c
 	@echo "* CC: kernel/vga_txt.c"
 	@$(CC) -c $< -o $@
 
+build/util.o: kernel/util.c
+	@echo "* CC: kernel/util.c"
+	@$(CC) -c $< -o $@
+
 build/kernel.elf: build/kernel.elf.o build/kstring.o build/isr_defs.o build/idt.o build/io.o build/pic.o build/mem.o\
-				  build/vga_txt.o
+				  build/vga_txt.o build/util.o
 	@echo "* LD: build/kernel.elf.o"
 	@$(LD) -T kernel/kernel.ld -o $@ $^
 	@echo "Compilation finished"

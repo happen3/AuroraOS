@@ -15,3 +15,5 @@ typedef struct {
 void* kmalloc();
 void pages_init(void* memory_start);
 void kfree(void* ptr);
+
+extern page_t pages[16];
