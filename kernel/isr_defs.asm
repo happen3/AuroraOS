@@ -14,6 +14,13 @@ extern timer_tick
 %include "kernel/cdecl.asm"
 %define PIC_EOI 0x20 
 
+put_frame_onto_page:
+    mov esi, ebx
+    mov edi, 0x9FD00
+    mov ecx, 4
+    rep movsd
+    ret
+
 default_isr_handler:
     pushad
     ; generic handler - use only for interrupts not handled by a more appropriate handmler
@@ -44,6 +51,8 @@ double_fault_handler:
     iret
 
 divide_by_zero_handler:
+    mov ebx, esp
+    call put_frame_onto_page
     pushad
     push divide_error_message
     call kputs_err

@@ -1,5 +1,7 @@
 #include "vga_txt.h"
 #include "io.h"
+#include "mem.h"
+#include "util.h"
 #include "stdtypes.h"
 #include "kstring.h"
 volatile uint16_t *video = (volatile uint16_t*)0xB8000;
@@ -32,11 +34,39 @@ void kputs(const char* str, int col, int row, uint8_t attr) {
     set_cursor_pos(col + i, row);
 }
 
+void print_register(char reg[6], char* val, int col, int row, uint8_t unspecified) {
+    reg[4] = '=';
+    reg[5] = '\0';
+    if (unspecified == 1)
+        val = "  N/A  ";
+    kputs(reg, col, row, 0x0E);
+    kputs(val, col + 4, row, 0x0C);
+}
+
 void kputs_err(const char* str) {
 	size_t str_length = strlen(str);
 	for (int i = 0; i < str_length; i++) {
-		kputc(str[i], 0 + i, 22, 0x04);
+		kputc(str[i], 0 + i, 22, 0xE4);
 	}
+    // Fetch the stack frame copied to page 0
+    volatile uint32_t* ptr = pages[0].ptr;
+    uint32_t errorcode = ptr[0];
+    uint32_t eip = ptr[1];
+    uint32_t cs = ptr[2];
+    uint32_t eflags = ptr[3];
+
+    uint8_t unspecified = 0;
+    if (eip == 0x08 || eip == 0x10) {
+        eflags = cs;
+        cs = eip;
+        eip = errorcode;
+        errorcode = 0xFFFFFFFF;
+        unspecified = 1;
+    }
+    print_register("ERR  ", int_to_hex(errorcode), 0, 23, unspecified);
+    print_register("EIP  ", int_to_hex(eip), 14, 23, 0);
+    print_register(" CS  ", int_to_hex(cs), 26, 23, 0);
+    print_register("EFL  ", int_to_hex(eflags), 39, 23, 0);
 }
 
 void clear_screen() {
