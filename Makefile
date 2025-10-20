@@ -1,10 +1,10 @@
 AS = "nasm"
-CC = "i686-elf-gcc" -ffreestanding -g
+CC = "i686-elf-gcc" -ffreestanding -g -Ikernel/ -Ikernel/drivers/keyboard
 LD = "i686-elf-ld"
 OBJCOPY = "i686-elf-objcopy"
 
 all: build/boot.bin build/kernel.elf.o build/kstring.o build/idt.o\
-	 build/isr_defs.o build/mem.o build/vga_txt.o build/kernel.elf build/kernel.bin build/bootimg.img\
+	 build/isr_defs.o build/mem.o build/vga_txt.o build/ps2.o build/keyboard.o build/kernel.elf build/kernel.bin build/bootimg.img\
 	 arch/x86/boot.img arch/x86/kernel.elf done
 
 build/boot.bin: boot/boot.asm
@@ -50,8 +50,16 @@ build/util.o: kernel/util.c
 	@echo "* CC: kernel/util.c"
 	@$(CC) -c $< -o $@
 
+build/ps2.o: kernel/ps2.c
+	@echo "* CC: kernel/ps2.c"
+	@$(CC) -c $< -o $@
+
+build/keyboard.o: kernel/drivers/keyboard/keyboard.c
+	@echo "* CC: kernel/drivers/keyboard/keyboard.c"
+	@$(CC) -c $< -o $@
+
 build/kernel.elf: build/kernel.elf.o build/kstring.o build/isr_defs.o build/idt.o build/io.o build/pic.o build/mem.o\
-				  build/vga_txt.o build/util.o
+				  build/vga_txt.o build/util.o build/ps2.o build/keyboard.o
 	@echo "* LD: build/kernel.elf.o"
 	@$(LD) -T kernel/kernel.ld -o $@ $^
 	@echo "Compilation finished"
@@ -82,6 +90,9 @@ arch/x86/kernel.elf: build/kernel.elf
 qemu_test: build/bootimg.img
 	@qemu-system-x86_64 -hda build/bootimg.img -serial stdio
 
+qemu_debug: build/bootimg.img
+	@qemu-system-x86_64 -hda build/bootimg.img -serial stdio -d int
+	
 done:
 	@echo "Find built image at: arch/x86/boot.img"
 	@echo "Find kernel at     : arch/x86/kernel.elf"

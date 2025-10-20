@@ -44,3 +44,12 @@ void kfree(void* ptr) {
         }
     }
 }
+
+uint32_t getfree() {
+    uint32_t free_pages = 0;
+    for (int i = 0; i < TOTAL_PAGES; i++) {
+        if (pages[i].status == 1)
+            free_pages++;
+    }
+    return free_pages;
+}

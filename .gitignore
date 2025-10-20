@@ -6,3 +6,4 @@ build/*
 arch/*
 arch
 todolist
+debug.log

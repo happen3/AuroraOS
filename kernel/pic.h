@@ -22,4 +22,5 @@
 #define PIC2_DATA 0xA1          /* Data port of the PIC2 */
 
 void reset_mask_pic1(uint8_t mask);
+void reset_mask_pic2(uint8_t mask);
 void init_pic(uint8_t offset1, uint8_t offset2);

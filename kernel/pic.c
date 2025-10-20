@@ -21,12 +21,14 @@ void init_pic(uint8_t vector_start_1, uint8_t vector_start_2) {
 	outb(PIC2_DATA, ICW4_8086);
 	io_wait();
 
-	// Unmask both PICs.
 	outb(PIC1_DATA, 0);
-	outb(PIC2_DATA, 0);
 }
 
 // sets a new mask for the PIC.
 void reset_mask_pic1(uint8_t mask) {
 	outb(PIC1_DATA, mask);
+}
+
+void reset_mask_pic2(uint8_t mask) {
+	outb(PIC2_DATA, mask);
 }

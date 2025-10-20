@@ -19,6 +19,7 @@ extern void divide_by_zero_handler();
 extern void double_fault_handler();
 extern void overflow_handler();
 extern void timer_irq();
+extern void keyb_irq();
 
 void setup_idt() {
     for (int i = 0; i != 256; i++) {
@@ -32,6 +33,7 @@ void setup_idt() {
 
     // Hardware interrupts
     write_idt_entry(0x30, (uint32_t)timer_irq);
+    write_idt_entry(0x31, (uint32_t)keyb_irq);
 }
 
 void load_idt() {
