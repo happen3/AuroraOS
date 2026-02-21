@@ -1,4 +1,4 @@
 CompileFlags:
   Add:
-    - -I/home/nelyon/os/kernel
+    - -Ikernel
     - -nostdinc
